@@ -1,7 +1,7 @@
 #!/bin/bash
 FILEBASE=est.trunc.fa
 NRECORDS=6444875
-TIME='/usr/bin/time --format  %e\t%U\t%S'
+TIME='/usr/bin/time -p'
 
 rm -f *.time
 let usefilenum=0
@@ -27,7 +27,7 @@ function dorun()
 
     echo -n "$frac	$trial	$nout	" >> $resultfile
     echo "$TIME ./sample.py -f $infile -n $nout $option"
-    $TIME ./sample.py -f $infilename -n $nout $option >> /dev/null 2>> $resultfile
+    ($TIME ./sample.py -f $infilename -n $nout $option >> /dev/null ) 2>&1 | awk '{printf "%s\t",$2} END{print ""}' >> $resultfile
 }
 
 for frac in 0.001 0.002 0.005 0.01 0.02 0.05 0.1 0.2 0.5
@@ -48,11 +48,11 @@ do
     for trial in 1 2 3 4 5
     do
         echo -n "$frac  $trial  $nout	" >> cat-reservoir.time
-        ( $TIME cat $FILEPREFIX | ./sample.py -n $nout --reservoir >> /dev/null ) 2>> cat-reservoir.time
+        ( $TIME cat $FILEPREFIX | ./sample.py -n $nout --reservoir >> /dev/null )  2>&1 | awk '{printf "%s\t",$2} END{print ""}' >> cat-reservoir.time
         clearcache
 
         echo -n "$frac  $trial  $nout	" >> zcat-reservoir.time
-        ( $TIME zcat "${FILEPREFIX}.gz" | ./sample.py -n $nout --reservoir >> /dev/null ) 2>> zcat-reservoir.time
+        ( $TIME zcat "${FILEPREFIX}.gz" | ./sample.py -n $nout --reservoir >> /dev/null ) 2>&1 | awk '{printf "%s\t",$2} END{print ""}' >> zcat-reservoir.time
         clearcache
 
         dorun $frac $trial $nout --reservoir $FILEBASE reservoir.time ".gz"
