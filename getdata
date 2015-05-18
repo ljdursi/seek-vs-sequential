@@ -6,9 +6,7 @@
 
 wget http://hgdownload.cse.ucsc.edu/goldenpath/hg19/bigZips/est.fa.gz
 gunzip est.fa.gz
-split --lines 800000 est.fa
-rm est.fa xab
-mv xaa est.trunc.fa
+split -l 80000000 est.fa && rm est.fa xab && mv xaa est.trunc.fa
 cp est.trunc.fa est.trunc.fa.0
 gzip est.trunc.fa.0
 mv est.trunc.fa est.trunc.fa.0
