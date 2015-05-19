@@ -6,6 +6,13 @@ TIME='/usr/bin/time -p'
 rm -f *.time
 let usefilenum=0
 
+if [ $(type -P "gzcat") ]
+then
+    ZCAT=gzcat
+else
+    ZCAT=zcat
+fi
+
 function clearcache()
 {
     let usefilenum=usefilenum+1
@@ -52,7 +59,7 @@ do
         clearcache
 
         echo -n "$frac  $trial  $nout	" >> zcat-reservoir.time
-        ( $TIME zcat "${FILEPREFIX}.gz" | ./sample.py -n $nout --reservoir >> /dev/null ) 2>&1 | awk '{printf "%s\t",$2} END{print ""}' >> zcat-reservoir.time
+        ( $TIME $ZCAT "${FILEPREFIX}.gz" | ./sample.py -n $nout --reservoir >> /dev/null ) 2>&1 | awk '{printf "%s\t",$2} END{print ""}' >> zcat-reservoir.time
         clearcache
 
         dorun $frac $trial $nout --reservoir $FILEBASE reservoir.time ".gz"
