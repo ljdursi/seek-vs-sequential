@@ -38,7 +38,6 @@ def randomSeek(infile, size, nrecords):
             locations.append(int(random.uniform(0,size)))
         locations.sort()
 
-        records = []
         reader = simplefasta.FastaReader(infile)
         for location in locations:
             infile.seek(location,os.SEEK_SET)
